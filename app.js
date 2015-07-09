@@ -14,7 +14,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use('/uploads', require('./routes/uploads'));
-//app.use('/parser', require('./routes/parser'));
+app.use('/parser', require('./routes/parser'));
 
 
 // uncomment after placing your favicon in /public

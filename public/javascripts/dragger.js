@@ -32,9 +32,49 @@ document.addEventListener('DOMContentLoaded',function(){
                 formdata.append('file' + index, file);
             }
         });
-        makeAJAXCall('post', '/uploads',formdata);
+
+        Promise.all([uploadPromise('post', '/uploads',formdata)]).then(function(data){
+            var xhr = new XMLHttpRequest();
+            xhr.open('post','/parser');
+            xhr.setRequestHeader('content-type','application/json')
+            xhr.addEventListener('readystatechange', function () {
+                if(xhr.readyState === 4){
+                   console.log('going to the parser router');
+                }
+            });
+            xhr.send(JSON.stringify(data));
+        },function(error){
+            console.log('Error encountered: ',error);
+        });
+        //makeAJAXCall('post', '/uploads',formdata);
+//        makeAJAXCall('post', '/parser',formdata);
     });
 });
+
+/***
+ * @function uploadPromise
+ * @param HTTPVerb
+ * @param url
+ * @param data
+ * @returns {Promise}
+ */
+
+function uploadPromise(HTTPVerb, url, data){
+    return new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open(HTTPVerb, url);
+        xhr.addEventListener('readystatechange', function () {
+            if(xhr.readyState === 4){
+                if(xhr.status === 200){
+                    console.log('Getting a response');
+                    resolve(xhr.responseText);
+                }
+                else reject();
+            }
+        });
+        xhr.send(data);
+    });
+}
 
 /***
  * @function
@@ -46,11 +86,15 @@ document.addEventListener('DOMContentLoaded',function(){
 function makeAJAXCall(HTTPVerb, url, data){
 
     var xhr = new XMLHttpRequest();
-    //xhr.open('post', '/uploads');
     xhr.open(HTTPVerb, url);
+    xhr.setRequestHeader('content-type','multipart/form-data');
     xhr.addEventListener('readystatechange',function(){
         if(xhr.readyState === 4){
-            console.log('Getting a response');
+            if(xhr.status === 200){
+                console.log('Getting a response');
+                resolve(xhr.responseText);
+            }
+            else reject();
         }
     });
     xhr.send(data);
