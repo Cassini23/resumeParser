@@ -3,9 +3,10 @@ var multer = require('multer');
 var fs = require('fs');
 var path = require('path');
 var final = [];
-//var pdfUtil = require('pdf-to-text');
-var pdf_path = "./uploads/pdf/";
+
 var read_from_path = "./uploads/txt/";
+
+var resumeModel = require('../models/resume');
 
 
 /*Check files in directory initially*/
@@ -18,7 +19,7 @@ router.get('/', function (req, res) {
 
 
 router.post('/', function (req, res) {
-    var final = [];
+    var dataObj;
     fs.exists(read_from_path, function (exists) {
         if(exists){
             fs.readdir(read_from_path, function(err, files){
@@ -34,9 +35,18 @@ router.post('/', function (req, res) {
                                     dataCollection.push(data[i]);
                                 }
                                 var rset = dataCollection.join('');
-                                console.log(rset);
-                                console.log(validateEmail(rset));
-                                console.log(validateNumber(rset));
+                                dataObj = {
+                                    nameOfFile: item,
+                                    email: validateEmail(rset),
+                                    phone:validateNumber(rset)
+                                };
+                                new resumeModel(dataObj).save(function(err, results){
+                                    if(err) res.status(500).json(err);
+                                    else {
+                                        res.status(200).json(results);
+
+                                    }
+                                });
                             }
                         });
                     });
@@ -46,7 +56,6 @@ router.post('/', function (req, res) {
         }
     });
 
-    res.send('parse');
 });
 
 
