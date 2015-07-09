@@ -2,13 +2,15 @@ var router = require('express').Router();
 var multer = require('multer');
 var fs = require('fs');
 var path = require('path');
-var initial = [] , final = [];
+var final = [];
 //var pdfUtil = require('pdf-to-text');
 var pdf_path = "./uploads/pdf/";
 var read_from_path = "./uploads/txt/";
 
+
 /*Check files in directory initially*/
-fileChecked(initial);
+//fileChecked(lists.initial);
+//console.log(lists.initial);
 
 router.get('/', function (req, res) {
     res.send('upload');
@@ -16,11 +18,33 @@ router.get('/', function (req, res) {
 
 
 router.post('/', function (req, res) {
+    var final = [];
+    fs.exists(read_from_path, function (exists) {
+        if(exists){
+            fs.readdir(read_from_path, function(err, files){
+                if(files.length > 0){
+                    files.forEach(function(item){
+                        fs.readFile(read_from_path + item, 'utf8', function (err,data) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            else{
+                                var dataCollection = [];
+                                for(var i =0; i<500; i++ ){
+                                    dataCollection.push(data[i]);
+                                }
+                                var rset = dataCollection.join('');
+                                console.log(rset);
+                                console.log(validateEmail(rset));
+                                console.log(validateNumber(rset));
+                            }
+                        });
+                    });
 
-    fileChecked(final);
-    console.log('after post', final.diff(initial));
-
-    parseMe(final.diff(initial));
+                }
+            });
+        }
+    });
 
     res.send('parse');
 });
@@ -34,21 +58,16 @@ router.post('/', function (req, res) {
 Array.prototype.diff = function(a) {
     return this.filter(function(i) {return a.indexOf(i) < 0;});
 };
-
-function fileChecked(fileList){
-    fileList = [];
+/*
+function fileChecked(){
     fs.exists(read_from_path, function (exists) {
         if(exists){
-          //  console.log('Aye it exists!');
             fs.readdir(read_from_path, function(err, files){
                 if(files.length > 0){
-   //                 console.log(files);
-            //        console.log('There are files downloaded');
-                    fileList = files;
-                    return fileList;
+                    return files;
+
                 }
                 else{
-     //               console.log('directory '+read_from_path + ' is empty');
                     return [];
                 }
             })
@@ -58,17 +77,9 @@ function fileChecked(fileList){
 
 function parseMe(fileList){
     console.log('Parsing.....', fileList);
-    fileList.forEach(function(item){
 
-        fs.readFile(read_from_path + item, 'utf8', function (err,data) {
-            if (err) {
-                return console.log(err);
-            }
-            console.log('done deal ',data);
-        });
-    });
 }
-
+*/
 /***
  * @function validateNumber
  * @param phoneNumber
@@ -86,10 +97,18 @@ var validateNumber = function(phoneNumber){
  * @param email
  * @returns {boolean}
  */
+
 var validateEmail = function(email){
+    var re = /([a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-zA-Z0-9._-]+)/gi;
+    return  email.match(re);
+};
+
+
+
+/*var validateEmail = function(email){
     var re = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i;
     return  re.test(email);
 };
-
+*/
 
 module.exports = router;

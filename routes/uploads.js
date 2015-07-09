@@ -20,9 +20,6 @@ router.get('/all', function (req, res) {
 
 
 router.post('/', function (req, res) {
-    console.log('In post');
-
-
     var orig_Filename, txt_Filename;
     //console.log(req.files);
     for(var prop in req.files){
@@ -35,7 +32,6 @@ router.post('/', function (req, res) {
                 //console.log(pdf_path+orig_Filename);
                 txt_Filename = orig_Filename.substr(0,orig_Filename.indexOf('.')) + '.txt';
 
-                console.log(saveTo+txt_Filename);
                 pdfUtil.pdfToText(pdf_path+orig_Filename, function(err, data) {
                     if (err) throw(err);
                     fs.writeFile(saveTo+txt_Filename, data, function (err) {
