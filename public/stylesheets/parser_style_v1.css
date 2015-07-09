@@ -1,0 +1,15 @@
+.drop-box{
+    height: 80vw;
+    width: 80vw;
+}
+
+.border{
+    border: 1px dashed grey;
+    box-shadow: 5px 5px 2px whitesmoke;
+    margin: 100px;
+}
+
+.text{
+    color: grey;
+    padding: 30px 30px;
+}
