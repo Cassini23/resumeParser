@@ -41,10 +41,9 @@ router.post('/', function (req, res) {
                                     phone:validateNumber(rset)
                                 };
                                 new resumeModel(dataObj).save(function(err, results){
-                                    if(err) res.status(500).json(err);
+                                    if(err) console.log(err);
                                     else {
-                                        res.status(200).json(results);
-
+                                        console.log(results);
                                     }
                                 });
                             }
@@ -55,7 +54,7 @@ router.post('/', function (req, res) {
             });
         }
     });
-
+    res.send('Done');
 });
 
 
